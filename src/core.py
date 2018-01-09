@@ -15,9 +15,12 @@ class BittrexConnection(object):
 
     @staticmethod
     def display_price(currency):
-        prices = BittrexConnection.connection.get_ticker("BTC-" + currency)["result"]
-        print 'Bid: ' + '%1.8f' % prices["Bid"]
-        print 'Ask: ' + '%1.8f' % prices["Ask"]
+        try:
+            prices = BittrexConnection.connection.get_ticker("BTC-" + currency)["result"]
+            print 'Bid: ' + '%1.8f' % prices["Bid"]
+            print 'Ask: ' + '%1.8f' % prices["Ask"]
+        except TypeError:
+            print "Currency not found"
 
     @staticmethod
     def test_func(currency):
