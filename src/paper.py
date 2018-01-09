@@ -2,11 +2,16 @@ from bittrex.bittrex import *
 import pickle
 import os
 
-class PaperTrader:
-    bittrex_connection = Bittrex(None, None)
+class BittrexConnection:
+    connection = Bittrex(None, None)
 
+# A PaperTrader is full of Portfolios, which are full of Trades/Positions
+class PaperTrader:
+    def __init(self):
+        print "papertrader"
+
+class Portfolio:
     def __init__(self):
-        # print "Paper trading initializing"
         self.open_trades = {}
 
         if not os.path.exists("tradedata.p"):
@@ -14,9 +19,10 @@ class PaperTrader:
 
         self.load_trades()
 
+    # TODO: - Argument to add whether the price is bid/ask
     def open_new_trade(self, currency):
         try:
-            price = PaperTrader.bittrex_connection.get_ticker("BTC-" + currency)["result"]["Ask"]
+            price = BittrexConnection.connection.get_ticker("BTC-" + currency)["result"]["Ask"]
             new_trade = Trade(currency, price)
 
             if currency not in self.open_trades:
@@ -27,18 +33,16 @@ class PaperTrader:
         except TypeError:
             print 'Currency not found'
 
-
     def close_trade(self, currency):
         if currency in self.open_trades:
             self.open_trades[currency].close()
             del self.open_trades[currency]
 
     def list_open_trades(self):
-        # print 'CURRENT POSITIONS'
         for key in self.open_trades:
             self.open_trades[key].print_trade_status()
 
-    def score_all(self):
+    def score_all_trades(self):
         total_score = 0.0
 
         for key in self.open_trades:
@@ -47,7 +51,7 @@ class PaperTrader:
         total_score -= len(self.open_trades)
         return total_score * 100.0
 
-    def close_all(self, output_file="portfolio.txt"):
+    def close_all_trades(self, output_file="portfolio.txt"):
         f = open(output_file, 'w')
 
         total_score = self.score_all()
@@ -70,7 +74,7 @@ class PaperTrader:
 
     def lookup_price(self, currency):
         try:
-            current_price = PaperTrader.bittrex_connection.get_ticker("BTC-" + currency)["result"]["Ask"]
+            current_price = BittrexConnection.connection.get_ticker("BTC-" + currency)["result"]["Ask"]
             print '%1.8f' % current_price
         except TypeError:
             print 'Not found'
@@ -82,8 +86,15 @@ class Trade:
         self.current_price = buy_in
 
     def get_current_price(self):
-        current_price = PaperTrader.bittrex_connection.get_ticker("BTC-" + self.currency)["result"]["Ask"]
+        current_price = BittrexConnection.connection.get_ticker("BTC-" + self.currency)["result"]["Ask"]
         return current_price
+
+    def get_percent_change(self, ping_api=False):
+        if ping_api:
+            self.current_price = self.get_current_price()
+
+        percent_change = (self.current_price / self.buy_in)
+        return percent_change
 
     def print_trade_status(self):
         try:
@@ -95,16 +106,9 @@ class Trade:
             percent_change = (self.current_price / self.buy_in)
 
             print ('{%2f}' % percent_change)
-            
+
         except TypeError:
             print self.currency + " .. API timeout"
-
-    def get_percent_change(self, ping_api=False):
-        if ping_api:
-            self.current_price = self.get_current_price()
-
-        percent_change = (self.current_price / self.buy_in)
-        return percent_change
 
     def close(self):
         self.current_price = self.get_current_price()

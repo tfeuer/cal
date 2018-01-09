@@ -32,12 +32,12 @@ while base_command != "quit" and base_command != "q":
         paper_trader.lookup_price(argv[1].upper())
 
     if base_command == "scoreall":
-        print paper_trader.score_all()
+        print paper_trader.score_all_trades()
 
     if base_command == "closeall":
         if argc == 2:
             filename = argv[1]
-            paper_trader.close_all(filename)
+            paper_trader.close_all_trades(filename)
         else:
             print "Please provide a filename"
 
