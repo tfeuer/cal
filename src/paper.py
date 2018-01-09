@@ -1,17 +1,53 @@
 from bittrex.bittrex import *
 import pickle
 import os
-
-class BittrexConnection:
-    connection = Bittrex(None, None)
+from core import *
 
 # A PaperTrader is full of Portfolios, which are full of Trades/Positions
 class PaperTrader:
-    def __init(self):
-        print "papertrader"
+    def __init__(self):
+        self.selected_portfolio = None
+        self.portfolios = {}
+
+        if not os.path.exists("portfolios.p"):
+            self.persist_to_file()
+
+        self.load_from_file()
+
+    def create_new_portfolio(self, name):
+        new_portfolio = Portfolio(name)
+        self.portfolios[name] = new_portfolio
+        self.selected_portfolio = self.portfolios[name]
+
+    def remove_portfolio(self, name):
+        del self.portfolio[name]
+
+    def list_portfolios(self):
+        for portfolio in self.portfolios:
+            print portfolio
+
+    def select_portfolio(self, name):
+        try:
+            self.selected_portfolio = self.portfolios[name]
+            print "Selected portfolio: " + name
+        except KeyError:
+            print "Portfolio name not found"
+
+    def get_name(self):
+        if self.selected_portfolio == None:
+            return "No portfolio selected"
+        else:
+            return self.selected_portfolio.name
+
+    def persist_to_file(self):
+        pickle.dump(self.portfolios, open("portfolios.p", "wb"))
+
+    def load_from_file(self):
+        self.portfolios = pickle.load(open("portfolios.p", "rb"))
 
 class Portfolio:
-    def __init__(self):
+    def __init__(self, name):
+        self.name = name
         self.open_trades = {}
 
         if not os.path.exists("tradedata.p"):
@@ -71,13 +107,6 @@ class Portfolio:
 
     def load_trades(self):
         self.open_trades = pickle.load(open("tradedata.p", "rb"))
-
-    def lookup_price(self, currency):
-        try:
-            current_price = BittrexConnection.connection.get_ticker("BTC-" + currency)["result"]["Ask"]
-            print '%1.8f' % current_price
-        except TypeError:
-            print 'Not found'
 
 class Trade:
     def __init__(self, currency, buy_in):

@@ -1,52 +1,25 @@
 from bittrex.bittrex import *
-from paper import *
 
-paper_trader = PaperTrader()
+class BittrexConnection(object):
+    connection = Bittrex(None, None)
 
-CLI_COMMANDIN_STRING = "cal {  "
-argv = raw_input(CLI_COMMANDIN_STRING).split()
-argc = len(argv)
+    @staticmethod
+    def lookup_ask_price(currency):
+        price = BittrexConnection.connection.get_ticker("BTC-" + currency)["result"]["Ask"]
+        return price
 
-base_command = ""
+    @staticmethod
+    def lookup_bid_price(currency):
+        price = BittrexConnection.connection.get_ticker("BTC-" + currency)["result"]["Bid"]
+        return price
 
-if argc != 0:
-    base_command = argv[0]
+    @staticmethod
+    def display_price(currency):
+        prices = BittrexConnection.connection.get_ticker("BTC-" + currency)["result"]
+        print 'Bid: ' + '%1.8f' % prices["Bid"]
+        print 'Ask: ' + '%1.8f' % prices["Ask"]
 
-while base_command != "quit" and base_command != "q":
-    if base_command == "open" and argc == 2:
-        paper_trader.open_new_trade(argv[1].upper())
-
-    if base_command == "close" and argc == 2:
-        paper_trader.close_trade(argv[1].upper())
-
-    if base_command == "status" and argc == 1:
-        paper_trader.list_open_trades()
-
-    if base_command == "status" and argc == 2:
-        if argv[1].upper() in paper_trader.open_trades:
-            paper_trader.open_trades[argv[1].upper()].print_trade_status()
-        else:
-            print "No position"
-
-    if base_command == "price" and argc == 2:
-        paper_trader.lookup_price(argv[1].upper())
-
-    if base_command == "scoreall":
-        print paper_trader.score_all_trades()
-
-    if base_command == "closeall":
-        if argc == 2:
-            filename = argv[1]
-            paper_trader.close_all_trades(filename)
-        else:
-            print "Please provide a filename"
-
-    # Next command
-    argv = raw_input(CLI_COMMANDIN_STRING).split()
-    argc = len(argv)
-    if argc != 0:
-        base_command = argv[0]
-    else:
-        base_command = ""
-
-paper_trader.persist_trades()
+    @staticmethod
+    def test_func(currency):
+        data = BittrexConnection.connection.get_ticker("BTC-" + currency)
+        print data
