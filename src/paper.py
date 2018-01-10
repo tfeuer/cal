@@ -49,11 +49,7 @@ class Portfolio:
     def __init__(self, name):
         self.name = name
         self.open_trades = {}
-
-        if not os.path.exists("tradedata.p"):
-            self.persist_trades()
-
-        self.load_trades()
+        self.closed_scores = 0
 
     # TODO: - Argument to add whether the price is bid/ask
     def open_new_trade(self, currency):
@@ -87,7 +83,8 @@ class Portfolio:
         total_score -= len(self.open_trades)
         return total_score * 100.0
 
-    def close_all_trades(self, output_file="portfolio.txt"):
+    def close_all_trades(self):
+        output_file = self.name + ".txt"
         f = open(output_file, 'w')
 
         total_score = self.score_all()
@@ -101,12 +98,6 @@ class Portfolio:
 
         f.write(' '.join(("Total score", str(total_score))))
         f.close()
-
-    def persist_trades(self):
-        pickle.dump(self.open_trades, open("tradedata.p", "wb"))
-
-    def load_trades(self):
-        self.open_trades = pickle.load(open("tradedata.p", "rb"))
 
 class Trade:
     def __init__(self, currency, buy_in):
