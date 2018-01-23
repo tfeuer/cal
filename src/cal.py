@@ -16,22 +16,18 @@ if argc != 0:
     base_command = argv[0]
 
 while base_command != "quit" and base_command != "q":
-    # general commands
+    # General commands
     if base_command == "test":
-        # BittrexConnection.test_func("nxt")
         if argc == 1:
             gold_trader.get_balances()
         elif argc == 2:
             arg1 = argv[1]
             print gold_trader.get_balance_of(arg1)
 
-
     if base_command == "price" and argc == 2:
-        # print 'Bid: ' + '%1.8f' % BittrexConnection.lookup_bid_price(argv[1].upper())
-        # print 'Ask: ' + '%1.8f' % BittrexConnection.lookup_ask_price(argv[1].upper())
         BittrexConnection.display_price(argv[1])
 
-    # portfolio commands
+    # Portfolio commands
 
     if base_command == "portfolios":
         paper_trader.list_portfolios()
@@ -45,7 +41,7 @@ while base_command != "quit" and base_command != "q":
         if argc == 2:
             paper_trader.select_portfolio(argv[1])
 
-    # trade commands
+    # Trade commands
 
     if base_command == "open" and argc == 2:
         paper_trader.selected_portfolio.open_new_trade(argv[1].upper())
@@ -66,9 +62,9 @@ while base_command != "quit" and base_command != "q":
         print paper_trader.selected_portfolio.score_all_trades()
 
     if base_command == "closeall":
-        paper_trader.selected_portfolio.close_all_trades(filename)
+        paper_trader.selected_portfolio.close_all_trades()
 
-    # Next command
+    # Next command in
     argv = raw_input(CLI_COMMANDIN_STRING).split()
     argc = len(argv)
     if argc != 0:
