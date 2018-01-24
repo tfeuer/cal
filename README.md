@@ -1,7 +1,7 @@
 # cal
 Crypto paper trading and bittrex CLI client
 
-You can use this CLI tool to (currently just) paper trade on Bittrex.
+You can use this CLI tool to (currently just) paper trade on Bittrex. Run with: "python cal.py"
 
 Commands are as follows:
 
@@ -30,7 +30,7 @@ Switches to the portfolio with the name you provided
 ## Trade Commands
 ### open \<symbol\>
 
-Adds a position to your portfolio of the provided currency at its given ask price. 
+Adds a position to your portfolio of the provided currency at its given ask price
 
 ### close \<symbol\>
 
